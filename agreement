@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Agreement</title>
+    <style>
+        /* Common styling for both sections */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgba(240, 242, 255, 0);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            display: grid;
+            align-items: start;
+            width: 80%;
+            margin: auto;
+            background: rgba(240, 242, 255, 0.82);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #00836C;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #024f41;
+        }
+
+        #result,
+        #step3Summary {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .final-cost {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        /* Purchase Agreement specific styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            text-align: left;
+        }
+
+        .header-left img {
+            max-width: 200px;
+            margin-bottom: 10px;
+        }
+
+        .header-left p {
+            margin: 5px 0;
+        }
+
+        .header-right {
+            text-align: right;
+            flex-grow: 1;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0073e6;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .info div {
+            width: 48%;
+            padding: 10px;
+            background-color: #e8f4ff;
+            border-radius: 4px;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f8ff;
+        }
+
+        .highlight {
+            background-color: #e8f4ff;
+            font-weight: bold;
+        }
+
+        .quote-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .quote-info a {
+            color: #0073e6;
+            text-decoration: none;
+        }
+
+        .quote-info a:hover {
+            text-decoration: underline;
+        }
+
+        .terms {
+            margin-top: 30px;
+            font-size: 14px;
+        }
+
+        .terms h2 {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .signature-date {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            align-items: flex-end;
+        }
+
+        .signature-date div {
+            width: 48%;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        /* Signature canvas styling */
+        #signatureCanvas {
+            border: 1px solid black;
+            cursor: crosshair;
+            width: 100%;
+            height: 200px;
+        }
+
+        #clearButton {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #clearButton:hover {
+            background-color: #c22d21;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="purchaseAgreement">
+        <header>
+            <div class="header-left">
+                <img src="https://home9.com/images/HOME9.png" alt="Home9 Logo">
+                <p>PO BOX 1663, Keller, TX 76244</p>
+                <p>Phone: 903-215-9441</p>
+            </div>
+            <div class="header-right">
+                <div class="title">Purchase Agreement</div>
+            </div>
+        </header>
+
+        <div class="info">
+            <div id="billingInfo"></div>
+            <div>
+                <p><strong>INVOICE #: <span id="invoiceNumber"></span></strong></p>
+                <p><strong>DATE:</strong> <span id="currentDate"></span></p>
+                <p><strong>CUSTOMER ID:</strong> <span id="customerId"></span></p>
+                <p><strong>TERMS:</strong> 50% Deposit<br>25% Upon Setting Post<br>25% Upon Completion</p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>QTY</th>
+                    <th>UNIT PRICE</th>
+                    <th>AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody id="agreementTable"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="highlight">TOTAL</td>
+                    <td id="totalAmount"></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Additional text before Terms and Conditions -->
+        <div class="quote-info">
+            <p>Quote valid for 30 days. If you have any questions about this invoice, please contact</p>
+            <p><a href="mailto:info@home9.com">info@home9.com</a></p>
+        </div>
+
+        <!-- Terms and Conditions section -->
+        <div class="terms">
+            <h2>TERMS AND CONDITIONS</h2>
+<p>Our business name is HOME9. We offer real estate and contractor services for the public. You may also see our advertising as FENCE9 or other brands, but all business activity will be conducted as HOME9 for the duration of this project.</p>
+<br>
+<p>Billing and payments will be made to HOME9. The preferred payment method is Zelle to phone number 903-215-9441. We can also accept checks made payable to HOME9. If payment is via check, there may be a delay for banks to process check payments.</p>
+<br>
+<p>Total footage shown in this purchase agreement is an initial preliminary estimate of project total footage. Both parties agree this will be used as a preliminary quantity until construction or survey verifies all property boundaries and exact footage can be verified. Once contractor begin to set posts,an updated final total that will be updated as a separate amendment agreement to this contract should there be a difference in footage. The remaining two installments will be adjusted according to actual total footage.</p>
+<br>
+<p>At a minimum, payments are to be made in 3 installments: First installment of 50% will be made to begin scheduling the work and begin ordering the first round of materials. The second installment is to be made once fence posts are installed. After the second installment has been received, the final batch of materials will typically be delivered within 24-48 hours of payment posting. The final payment of 25% will be due upon final completion as deemed complete by the contractor.</p>
+<br>
+<p>Delays in payments may cause the project to be delayed while funds arrive. Progress payments are needed prior to beginning the next construction phase.</p>
+<br>
+<p>Pickets by default will be 5.5&quot; wide and may either be flat top or dog-eared depending on available stock unless differently requested at the time of ordering. Typically, pre-stained pickets are default flat top pickets. Special preference requests may delay scheduling.</p>
+<br>
+<p>Pricing for this project is based on a minimum order quantity. Pricing is also with the understanding that this scope will not be reduced or split between multiple fencing contractors. Unit price will exist at the current rate assuming the project is greater than the preliminary order quantity.</p>
+<br>
+<p>Our construction schedule will begin the project by setting all posts. Once all posts are set, constractor will begin installing 2x4 runners. Once runners are installed, contractor will begin installing pickets. Once pickets are complete, we will cut in any gates that may be needed and stain any portion that may need stained.</p>
+<br>
+<p>By default, standard packages will include pressure treated 2x4's, 5.5&quot;x6' top pickets, 15 gauge or thicker metal posts with post caps, post clamps, and concrete as needed for the posts unless otherwise requested or special ordered. Pre-Stained pickets by default will come pecan colored.</p>
+<br>
+<p>By default, posts will be set approximately 2' below grade and concreted in place. For 6' fences, we may have the option to go 4' deep without concrete if preferred; consult your construction project manager to see if additional costs may be associated should this option be preferred.</p>
+<br>
+<p>Gates will be assembled from the same materials as the fence and include 2 posts on the swing side and 1 post on the latch side by default. Total fence quanity will include the length of any gate sections.</p>
+<br>
+<p>Gates will include standard black hardware with (2) 8&quot; hinges, handle, and lever handle.</p>
+<br>
+<p>By default, fencing will be installed at the same elevation changes as the current ground grade. This may result in pickets going up and down as the elevation changes. If you wish to have even tops all throughout despite being a gap at the bottom, please instruct us to do so prior to beginning the project.</p>
+<br>
+<p>If a cap is chosen, we will use either cedar or pine 2x4 where cap is to be used.</p>
+<br>
+<p>If trim is chosen, we will use 5.5&quot; wide pickets if no cap is used and either 5.5&quot; or 3.5&quot; wide pickets if a cap is used. Trim will only have one layer of trim by default.</p>
+<br>
+<p>Projects will typically be scheduled within 10-14 business days after receiving the initial deposit. This may change based on current workload. Any changes to the schedule and we will do our best to notify you on scheduling updates.</p>
+<br>
+<p>Typical construction timeline is 3 days per 100' of new fence and 1 day per 100' of removals. Weather, payment delays, material availability, or delivery schedules may impact the schedule. We will do our best to inform the buyer of any issues that may cause a schedule impact.</p>
+<br>
+<p>Contractor has the right to rebid the project prior to beginning construction should material costs spike significantly before work commences. In the event the new bid is not approved by the buyer, any deposits may be refunded to the buyer should the contractor choose to not perform the work at the original bid price.</p>
+<br>
+<p>Any permits or entity construction approvals (HOA, city, township, local municipality, etc.) that are needed prior to beginning construction will be the sole responsibility of the property owner aka buyer. Once we schedule work to commence, it is with the understanding that all needed parties have been notified by the property owner, permits are in place, and are approved to begin work. Failure to do so will be at the sole responsibility of the property owner and potential damages or expenses that may incur as a direct result. Additional fees and charges may occur as well. Should the project not be approved after commencing work and be instructed to halt for any reason, the property owner is still responsible for fulfilling the complete value of this contractual agreement in addition to any additional standby, mobilization, and/or demobilization fees that may occur.</p>
+<br>
+<p>All underground utilities including but not limited to: sprinkler heads, sprinkler lines, water and sewer lines, electric, telecommunications, etc. should be marked by the buyer via flagging pins. Marker paint may be used if marked the day prior to construction; however, marker paint may fade prior to or during construction and may no longer be visible to the contractor at the time of install. To avoid any conflicts and to avoid any possible line strikes, please make sure all lines are clearly marked and stay visible throughout the construction project. Any unmarked line strikes or damage will be at the cost and responsibility of the buyer.</p>
+<br>
+<p>You the buyer agree to pay the amount in full immediately upon the contractor fulfilling their contractual obligations and deeming the project as complete. Final payments are to be made within 48 hours of completion.</p>
+<br>
+<p>Any deviations from this agreement will need to be done in writing with an agreed-upon change order price that will be added to this contractual amount.</p>
+<br>
+<p>Once the order has been confirmed and scheduled, the order may not be canceled for any reason. The full amount of this purchase agreement will be paid in full based on the installment progress plan or paid in full within 7 business days of any forced shutdown. A forced shutdown can be forced by property owner, aka buyer, or any governing third-party entity.</p>
+<br>
+<p>Past due invoices may incur a 1.5% monthly late payment fee or the maximum amount allowed by law. Failure to pay outstanding invoices will result in the contractor filing a contractor's lien on the property.</p>
+<br>
+<p>Contractor owns all materials until the full amount of this contract is paid in full and deemed complete by the contractor.</p>
+<br>
+<p>By confirming this Purchase Agreement, you the buyer agree to fully fund the project ordered in the total amount of <strong id="totalAmountText"></strong></p>
+
+            <div class="signature-date">
+                <div>
+                    <canvas id="signatureCanvas"></canvas>
+                    <button id="clearButton">Clear Signature</button>
+                </div>
+                <div>
+                    <p>Date: <span id="signatureDate"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for your business! If you have any questions about this invoice, please contact <a href="mailto:info@home9.com">info@home9.com</a></p>
+            <p>Quote valid for 30 days. Page 1 of 4</p>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="submitButton">Submit</button>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const length = urlParams.get('length');
+            const height = urlParams.get('height');
+            const woodType = urlParams.get('woodType');
+            const picketStyle = urlParams.get('picketStyle');
+            const cap = urlParams.get('cap');
+            const kickerPlate = urlParams.get('kickerPlate');
+            const stain = urlParams.get('stain');
+            const stainColor = urlParams.get('stainColor');
+            const standardGates = urlParams.get('standardGates');
+            const oversizedGates = urlParams.get('oversizedGates');
+            const removal = urlParams.get('removal');
+            const reusePost = urlParams.get('reusePost');
+
+            const name = urlParams.get('name') || "Unknown Name"; // Default value
+            const phone = urlParams.get('phone') || "Unknown Phone"; // Default value
+            const email = urlParams.get('email') || "Unknown Email"; // Default value
+            const address = urlParams.get('address') || "Unknown Address"; // Default value
+            const paymentMethod = urlParams.get('paymentMethod') || "Unknown Payment Method"; // Default value
+
+            // Pricing details
+            const pricing = {
+                '6': {
+                    'pressureTreated': {
+                        'sideBySide': 25,
+                        'boardOnBoard': 33,
+                        'kickerPlate': 0.75,
+                    },
+                    'cedar': {
+                        'sideBySide': 27,
+                        'boardOnBoard': 38,
+                        'kickerPlate': 0.85,
+                    },
+                    'stain': 5,
+                },
+                '8': {
+                    'pressureTreated': {
+                        'sideBySide': 30,
+                        'boardOnBoard': 39,
+                        'kickerPlate': 0.75,
+                    },
+                    'cedar': {
+                        'sideBySide': 34,
+                        'boardOnBoard': 44,
+                        'kickerPlate': 0.85,
+                    },
+                    'stain': 6,
+                },
+                'cap': {
+                    'pressureTreated': 3,
+                    'cedar': 6,
+                },
+                'removal': 5,
+                'reusePost': -5,
+                'gate': 250,
+                'oversizedGate': 350,
+            };
+
+            const unitPricePerFoot = pricing[height]?.[woodType]?.[picketStyle] || 0;
+            const totalFenceCost = length * unitPricePerFoot;
+
+            const kickerPlateCost = kickerPlate === 'yes' ? length * pricing[height][woodType]['kickerPlate'] : 0;
+            const stainCost = stain === 'yes' ? length * pricing[height]['stain'] : 0;
+            const capCost = cap !== 'no' ? length * pricing['cap'][woodType] : 0;
+            const standardGatesCost = standardGates * pricing['gate'];
+            const oversizedGatesCost = oversizedGates * pricing['oversizedGate'];
+            const removalCost = removal === 'yes' ? length * pricing['removal'] : 0;
+            const reusePostCost = reusePost === 'yes' ? length * pricing['reusePost'] : 0;
+
+            const deliveryCost = 79;
+            const finalTotalCost = totalFenceCost + kickerPlateCost + stainCost + capCost + standardGatesCost + oversizedGatesCost + removalCost + reusePostCost + deliveryCost;
+
+            document.getElementById('billingInfo').innerHTML = `
+                <p><strong>BILL TO:</strong></p>
+                <p>Name: ${name}</p>
+                <p>Phone: ${phone}</p>
+                <p>Address: ${address}</p>
+                <p>Email: ${email}</p>
+            `;
+
+            const agreementTable = document.getElementById('agreementTable');
+            agreementTable.innerHTML = `
+                <tr>
+                    <td>Total Length of Fence (in feet)</td>
+                    <td>${length}</td>
+                    <td>$${unitPricePerFoot}/ft</td>
+                    <td>$${totalFenceCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Height</td>
+                    <td>${height}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Wood Type</td>
+                    <td>${woodType}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Picket Style</td>
+                    <td>${picketStyle}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Cap</td>
+                    <td>${cap}</td>
+                    <td>$${capCost > 0 ? capCost / length : 0}/ft</td>
+                    <td>$${capCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Kicker Plate</td>
+                    <td>${kickerPlate}</td>
+                    <td>$${kickerPlateCost > 0 ? kickerPlateCost / length : 0}/ft</td>
+                    <td>$${kickerPlateCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Stain</td>
+                    <td>${stain}</td>
+                    <td>$${stainCost > 0 ? pricing[height]['stain'] : 0}/ft</td>
+                    <td>$${stainCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Number of 36" Gates</td>
+                    <td>${standardGates}</td>
+                    <td>$${pricing['gate']}</td>
+                    <td>$${standardGatesCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Number of Oversized Gates</td>
+                    <td>${oversizedGates}</td>
+                    <td>$${pricing['oversizedGate']}</td>
+                    <td>$${oversizedGatesCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Remove Existing Fence and Stack at Curb</td>
+                    <td>${removal}</td>
+                    <td>$${removalCost > 0 ? pricing['removal'] : 0}/ft</td>
+                    <td>$${removalCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Reuse Existing Post</td>
+                    <td>${reusePost}</td>
+                    <td>$${reusePostCost < 0 ? pricing['reusePost'] : 0}/ft</td>
+                    <td>$${reusePostCost.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Delivery/Shipping</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>$79.00</td>
+                </tr>
+            `;
+
+            document.getElementById('totalAmount').innerText = `$${finalTotalCost.toFixed(2)}`;
+            document.getElementById('totalAmountText').innerText = `$${finalTotalCost.toFixed(2)}`;
+
+            const currentDate = new Date().toLocaleDateString();
+            document.getElementById('currentDate').innerText = currentDate;
+
+            // Generate Unique Customer ID and Invoice Number
+            const customerId = 'CUST-' + Date.now();
+            const invoiceNumber = 'INV-' + Math.floor(Math.random() * 1000000);
+
+            document.getElementById('customerId').innerText = customerId;
+            document.getElementById('invoiceNumber').innerText = invoiceNumber;
+
+            // Set the current date for the signature date
+            document.getElementById('signatureDate').innerText = currentDate;
+        });
+
+        document.getElementById('submitButton').addEventListener('click', function () {
+            console.log('Submit button clicked');
+
+            // Get the signature data as a base64 image
+            const signatureCanvas = document.getElementById('signatureCanvas');
+            const signatureData = signatureCanvas.toDataURL('image/png');
+
+            // Collect data from the BILL TO section
+            const billingInfoText = document.getElementById('billingInfo').innerText.split('\n');
+
+            // Map the correct data by index, assuming each field is labeled
+            const name = billingInfoText.find(line => line.includes('Name:'))?.split(':')[1].trim() || "Unknown Name";
+            const phone = billingInfoText.find(line => line.includes('Phone:'))?.split(':')[1].trim() || "Unknown Phone";
+            const address = billingInfoText.find(line => line.includes('Address:'))?.split(':')[1].trim() || "Unknown Address";
+            const email = billingInfoText.find(line => line.includes('Email:'))?.split(':')[1].trim() || "Unknown Email";
+
+            const totalAmount = document.getElementById('totalAmountText').innerText;
+
+            console.log('Collected Data:', {
+                name: name,
+                phone: phone,
+                address: address,
+                email: email,
+                totalAmount: totalAmount,
+                signature: signatureData
+            });
+
+            // Prepare data for webhook
+            const data = {
+                name: name,
+                email: email,
+                phone: phone,
+                address: address,
+                totalAmount: totalAmount,
+                customerId: document.getElementById('customerId').innerText,
+                invoiceNumber: document.getElementById('invoiceNumber').innerText,
+                purchaseDetails: document.getElementById('agreementTable').innerText,
+                signature: signatureData
+            };
+
+            // Send data to the webhook
+            fetch('https://services.leadconnectorhq.com/hooks/DWwh41owjwAw7uCpKJZ1/webhook-trigger/d489ca3c-055c-4377-8627-07aae74d600a', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Data successfully sent to the webhook');
+                    // Redirect to the thank you page
+                    window.location.href = 'https://fence9.com/thank-you';
+                } else {
+                    console.error('Error sending data to the webhook', response.status, response.statusText);
+                    throw new Error('Network response was not ok.');
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+        });
+
+        // Signature Pad Script
+        const canvas = document.getElementById('signatureCanvas');
+        const context = canvas.getContext('2d');
+
+        let drawing = false;
+
+        // Adjust canvas size to match its style width/height to ensure proper scaling
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        // Function to get mouse position relative to the canvas
+        function getMousePos(canvas, event) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (event.clientX - rect.left) * (canvas.width / rect.width),
+                y: (event.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        // Function to start drawing
+        function startDrawing(e) {
+            drawing = true;
+            context.beginPath();
+            const pos = getMousePos(canvas, e);
+            context.moveTo(pos.x, pos.y);
+        }
+
+        // Function to draw on the canvas
+        function draw(e) {
+            if (!drawing) return;
+            const pos = getMousePos(canvas, e);
+            context.lineTo(pos.x, pos.y);
+            context.strokeStyle = 'black';  // Set the stroke color to black
+            context.lineWidth = 2;  // Set the line width to 2
+            context.stroke();
+        }
+
+        // Function to stop drawing
+        function stopDrawing() {
+            drawing = false;
+            context.closePath();
+        }
+
+        // Event listeners for mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Clear button to reset the signature pad
+        document.getElementById('clearButton').addEventListener('click', function() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        });
+    </script>
+</body>
+</html>
