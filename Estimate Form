@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fence Estimate</title>
+    <style>
+        /* Common styling for both sections */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgba(240, 242, 255, 0);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            display: grid;
+            align-items: start;
+            width: 80%;
+            margin: auto;
+            background: rgba(240, 242, 255, 0.82);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #00836C;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #024f41;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .result-text {
+            text-align: center;
+        }
+
+        .final-cost {
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fence Quote</h1>
+        <div id="step1">
+            <form id="fenceForm">
+                <div class="form-group">
+                    <label for="length">Total Length of Fence (in feet):</label>
+                    <input type="number" id="length" name="length" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="height">Height:</label>
+                    <select id="height" name="height" required>
+                        <option value="6">6'</option>
+                        <option value="8">8'</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="woodType">Wood Type:</label>
+                    <select id="woodType" name="woodType" required>
+                        <option value="pressureTreated">Pressure Treated</option>
+                        <option value="cedar">Cedar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="picketStyle">Picket Style:</label>
+                    <select id="picketStyle" name="picketStyle" required>
+                        <option value="sideBySide">Side by Side</option>
+                        <option value="boardOnBoard">Board on Board with Trim</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cap">Cap:</label>
+                    <select id="cap" name="cap" required>
+                        <option value="no">No Option</option>
+                        <option value="pressureTreated">Pressure Treated $3/Ft</option>
+                        <option value="cedar">Cedar $6/Ft</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="kickerPlate">Kicker Plate:</label>
+                    <select id="kickerPlate" name="kickerPlate" required>
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="stain">Stain:</label>
+                    <select id="stain" name="stain" required>
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="stainColorGroup">
+                    <label for="stainColor">Stain Color:</label>
+                    <select id="stainColor" name="stainColor">
+                        <option value="Pecan">Pecan</option>  
+                        <option value="Burnt Hickory">Burnt Hickory</option>
+                        <option value="Mahogany">Mahogany</option>
+                        <option value="Natural Cedar">Natural Cedar</option>
+                        <option value="Dark Walnut">Dark Walnut</option>
+                        <option value="Redwood">Redwood</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="standardGates">Number of 36" Gates:</label>
+                    <input type="number" id="standardGates" name="standardGates" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="oversizedGates">Number of Oversized Gates:</label>
+                    <input type="number" id="oversizedGates" name="oversizedGates" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="removal">Remove Existing Fence and Stack at Curb:</label>
+                    <select id="removal" name="removal" required>
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="reusePostGroup">
+                    <label for="reusePost">Reuse Existing Post:</label>
+                    <select id="reusePost" name="reusePost">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </form>
+            <div id="result" class="result-text"></div><br>
+
+            <button id="orderButton">Order</button>
+            <br>
+        </div>
+
+        <div id="step2" class="hidden">
+            <form id="userInfoForm">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <div id="nameError" class="error-message">Name is required.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <div id="emailError" class="error-message">A valid email is required.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Physical Address:</label>
+                    <input type="text" id="address" name="address" required>
+                    <div id="addressError" class="error-message">Address is required.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod" name="paymentMethod" required>
+                        <option value="zelle">Zelle</option>
+                        <option value="cashapp">CashApp</option>
+                        <option value="venmo">Venmo</option>
+                        <option value="check">Check</option>
+                    </select>
+                </div>
+            </form>
+            <button id="payNowButton">Pay Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Code for Estimate Calculation
+        function calculateEstimate(applyCharge = false) {
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            const height = document.getElementById('height').value;
+            const woodType = document.getElementById('woodType').value;
+            const picketStyle = document.getElementById('picketStyle').value;
+            const cap = document.getElementById('cap').value;
+            const kickerPlate = document.getElementById('kickerPlate').value;
+            const stain = document.getElementById('stain').value;
+            const stainColor = stain === 'yes' ? document.getElementById('stainColor').value : null;
+            const standardGates = parseInt(document.getElementById('standardGates').value, 10) || 0;
+            const oversizedGates = parseInt(document.getElementById('oversizedGates').value, 10) || 0;
+            const removal = document.getElementById('removal').value;
+            const reusePost = removal === 'yes' ? document.getElementById('reusePost').value : 'no';
+
+            const pricing = {
+                '6': {
+                    'pressureTreated': {
+                        'sideBySide': 25,
+                        'boardOnBoard': 33,
+                        'kickerPlate': 0.75,
+                        'gate': 250,
+                        'oversizedGate': 350
+                    },
+                    'cedar': {
+                        'sideBySide': 27,
+                        'boardOnBoard': 38,
+                        'kickerPlate': 0.85,
+                        'gate': 300,
+                        'oversizedGate': 550
+                    },
+                    'stain': 5
+                },
+                '8': {
+                    'pressureTreated': {
+                        'sideBySide': 30,
+                        'boardOnBoard': 39,
+                        'kickerPlate': 0.75,
+                        'gate': 300,
+                        'oversizedGate': 550
+                    },
+                    'cedar': {
+                        'sideBySide': 34,
+                        'boardOnBoard': 44,
+                        'kickerPlate': 0.85,
+                        'gate': 350,
+                        'oversizedGate': 850
+                    },
+                    'stain': 6
+                },
+                'removal': 5,
+                'reusePost': -5,
+                'cap': {
+                    'no': 0,
+                    'pressureTreated': 3,
+                    'cedar': 6
+                }
+            };
+
+            const baseCost = length * pricing[height][woodType][picketStyle];
+            const kickerCost = kickerPlate === 'yes' ? length * pricing[height][woodType]['kickerPlate'] : 0;
+            const stainCost = stain === 'yes' ? length * pricing[height]['stain'] : 0;
+            const gatesCost = (standardGates * pricing[height][woodType]['gate']) + (oversizedGates * pricing[height][woodType]['oversizedGate']);
+            const removalCost = removal === 'yes' ? length * pricing['removal'] : 0;
+            const reusePostCost = reusePost === 'yes' ? length * pricing['reusePost'] : 0;
+            const capCost = length * pricing['cap'][cap];
+            const deliveryCost = 79;
+
+            let totalCost = baseCost + kickerCost + stainCost + gatesCost + removalCost + reusePostCost + capCost;
+            let vat = 0;
+
+            if (applyCharge) {
+                vat = totalCost * 0.035;
+                totalCost += vat;
+            }
+
+            const resultText = `
+                <div>Estimated Cost: $${totalCost.toFixed(2)}</div>
+                <div>Delivery Cost: $${deliveryCost}</div>
+                <div class="final-cost">Final Total Cost: $${(totalCost + deliveryCost).toFixed(2)}</div>
+            `;
+            document.getElementById('result').innerHTML = resultText;
+
+            return {
+                totalCost: (totalCost + deliveryCost).toFixed(2),
+                baseCost: totalCost.toFixed(2),
+                vat: vat.toFixed(2)
+            };
+        }
+
+        document.getElementById('stain').addEventListener('change', function () {
+            const stainColorGroup = document.getElementById('stainColorGroup');
+            if (this.value === 'yes') {
+                stainColorGroup.classList.remove('hidden');
+            } else {
+                stainColorGroup.classList.add('hidden');
+            }
+            calculateEstimate();
+        });
+
+        document.getElementById('removal').addEventListener('change', function () {
+            const reusePostGroup = document.getElementById('reusePostGroup');
+            if (this.value === 'yes') {
+                reusePostGroup.classList.remove('hidden');
+            } else {
+                reusePostGroup.classList.add('hidden');
+            }
+            calculateEstimate();
+        });
+
+        const elements = document.querySelectorAll('#fenceForm input, #fenceForm select');
+        elements.forEach(element => {
+            element.addEventListener('input', () => calculateEstimate());
+            element.addEventListener('change', () => calculateEstimate());
+        });
+
+        const orderButton = document.getElementById('orderButton');
+        const payNowButton = document.getElementById('payNowButton');
+
+        orderButton.addEventListener('click', () => {
+            const length = parseFloat(document.getElementById('length').value);
+            if (!length || length <= 39) {
+                alert('Total length of fence must be greater than 39 feet.');
+                return;
+            }
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            // Scroll to the top of the form container
+            document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        payNowButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            let valid = true;
+
+            const name = document.getElementById('name');
+            const email = document.getElementById('email');
+            const address = document.getElementById('address');
+
+            const nameError = document.getElementById('nameError');
+            const emailError = document.getElementById('emailError');
+            const addressError = document.getElementById('addressError');
+
+            // Check Name
+            if (name.value.trim() === '') {
+                nameError.style.display = 'block';
+                valid = false;
+            } else {
+                nameError.style.display = 'none';
+            }
+
+            // Check Email
+            if (email.value.trim() === '' || !email.validity.valid) {
+                emailError.style.display = 'block';
+                valid = false;
+            } else {
+                emailError.style.display = 'none';
+            }
+
+            // Check Address
+            if (address.value.trim() === '') {
+                addressError.style.display = 'block';
+                valid = false;
+            } else {
+                addressError.style.display = 'none';
+            }
+
+            // If valid, send data to the webhook
+            if (valid) {
+                // Collect all form data
+                const length = encodeURIComponent(document.getElementById('length').value);
+                const height = encodeURIComponent(document.getElementById('height').value);
+                const woodType = encodeURIComponent(document.getElementById('woodType').value);
+                const picketStyle = encodeURIComponent(document.getElementById('picketStyle').value);
+                const cap = encodeURIComponent(document.getElementById('cap').value);
+                const kickerPlate = encodeURIComponent(document.getElementById('kickerPlate').value);
+                const stain = encodeURIComponent(document.getElementById('stain').value);
+                const stainColor = encodeURIComponent(document.getElementById('stainColor').value);
+                const standardGates = encodeURIComponent(document.getElementById('standardGates').value);
+                const oversizedGates = encodeURIComponent(document.getElementById('oversizedGates').value);
+                const removal = encodeURIComponent(document.getElementById('removal').value);
+                const reusePost = encodeURIComponent(document.getElementById('reusePost').value);
+
+                const name = encodeURIComponent(document.getElementById('name').value.trim());
+                const phone = encodeURIComponent(document.getElementById('phone').value.trim());
+                const email = encodeURIComponent(document.getElementById('email').value.trim());
+                const address = encodeURIComponent(document.getElementById('address').value.trim());
+                const paymentMethod = encodeURIComponent(document.getElementById('paymentMethod').value.trim());
+
+                // Prepare the payload
+                const payload = {
+                    length: length,
+                    height: height,
+                    woodType: woodType,
+                    picketStyle: picketStyle,
+                    cap: cap,
+                    kickerPlate: kickerPlate,
+                    stain: stain,
+                    stainColor: stainColor,
+                    standardGates: standardGates,
+                    oversizedGates: oversizedGates,
+                    removal: removal,
+                    reusePost: reusePost,
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    address: address,
+                    paymentMethod: paymentMethod
+                };
+
+                // Send data to the webhook using fetch
+                fetch('https://services.leadconnectorhq.com/hooks/DWwh41owjwAw7uCpKJZ1/webhook-trigger/dd6a23da-7718-41e7-abba-9264415661a0', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect to the purchase agreement page with query parameters
+                        const redirectUrl = `https://fence9.com/purchase-agreement?length=${length}&height=${height}&woodType=${woodType}&picketStyle=${picketStyle}&cap=${cap}&kickerPlate=${kickerPlate}&stain=${stain}&stainColor=${stainColor}&standardGates=${standardGates}&oversizedGates=${oversizedGates}&removal=${removal}&reusePost=${reusePost}&name=${name}&phone=${phone}&email=${email}&address=${address}&paymentMethod=${paymentMethod}`;
+                        window.location.href = redirectUrl;
+                    } else {
+                        throw new Error('Failed to send data to webhook.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error processing your order. Please try again.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
